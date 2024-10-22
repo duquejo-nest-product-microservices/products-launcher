@@ -1,6 +1,7 @@
 services:
   # MATS broker microservice
   nats-server:
+    container_name: nats-server
     image: nats:alpine3.20
     ports:
       - 8222:8222 # Clients management (Public port)
@@ -9,6 +10,7 @@ services:
 
   # Client gateway microservice
   client-gateway:
+    container_name: client-gateway
     build:
       context: ./client-gateway
       dockerfile: Dockerfile
@@ -25,6 +27,7 @@ services:
 
   # Products microservice
   products-ms:
+    container_name: products-ms
     build:
       context: ./products-ms
       dockerfile: Dockerfile
@@ -40,6 +43,7 @@ services:
 
   # Orders microservice
   orders-ms:
+    container_name: orders-ms
     build:
       context: ./orders-ms
       dockerfile: Dockerfile
@@ -66,8 +70,8 @@ services:
     image: postgres:15-alpine
     volumes:
       - ./orders-ms/postgres:/var/lib/postgresql/data
-    # ports: # Private network DB
-    #   - 5432:5432
+    ports: # Private network DB
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
