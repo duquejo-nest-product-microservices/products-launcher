@@ -49,7 +49,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./orders-ms/src:/usr/src/app/src # Binding container to Node JS filesystem
-    command: yarn run start:docker
+    command: yarn run docker:initialize
     environment:
       - PORT=3002
       - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
