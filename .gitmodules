@@ -1,3 +1,6 @@
 [submodule "client-gateway"]
 	path = client-gateway
 	url = https://github.com/duquejo-nest-product-microservices/client-gateway.git
+[submodule "orders-ms"]
+	path = orders-ms
+	url = https://github.com/duquejo-nest-product-microservices/orders-ms.git
