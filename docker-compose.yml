@@ -1,12 +1,13 @@
 services:
+
   # MATS broker microservice
   nats-server:
     container_name: nats-server
     image: nats:alpine3.20
     ports:
-      - 8222:8222 # Clients management (Public port)
-      # - 4222:4222 # Client port (Not necessary for current Network)
-      # - 6222:6222 # Routing port for clustering (Not necessary for current Network)
+      - "8222:8222" # Clients management (Public port)
+      # - "4222:4222" # Client port (Not necessary for current Network)
+      # - "6222:6222" # Routing port for clustering (Not necessary for current Network)
 
   # Client gateway microservice
   client-gateway:
@@ -79,6 +80,45 @@ services:
     depends_on:
       - nats-server
 
+  # Auth microservice
+  auth-ms:
+    container_name: auth-ms
+    build:
+      context: ./auth-ms
+      dockerfile: Dockerfile
+    volumes:
+      - ./auth-ms/src:/usr/src/app/src # Binding container to Node JS filesystem
+    command: yarn run start:docker
+    environment:
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+      - PORT=3004
+      - DATABASE_URL=mongodb://auth-db:27017/mongodb?replicaSet=rs0&authSource=admin&directConnection=true
+#      - DATABASE_URL=mongodb://mongodb:123456@auth-db:27017/mongodb?authSource=admin&directConnection=true
+      - JWT_SECRET=${AUTH_JWT_SECRET}
+    depends_on:
+      - nats-server
+      - auth-db
+
+  # Single MongoDB ReplicaSet
+  # https://medium.com/@JosephOjo/mongodb-replica-set-with-docker-compose-5ab95c02af0d
+  auth-db:
+    container_name: auth_database
+    image: mongo:7.0
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "27017" ]
+    ports:
+      - "27017:27017"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      retries: 30
+    volumes:
+      - auth-db_data:/data/db
+      - auth-db_config:/data/configdb
+
   # Extends orders db from other docker-compose config file
   # orders-db:
   #   extends:
@@ -92,8 +132,12 @@ services:
     volumes:
       - ./orders-ms/postgres:/var/lib/postgresql/data
     ports: # Private network DB
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=ordersms
+
+volumes:
+  auth-db_data:
+  auth-db_config:
