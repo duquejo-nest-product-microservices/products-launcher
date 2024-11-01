@@ -51,10 +51,38 @@ If done in reverse, the submodule references in the main repository will be lost
 - 8222 is an HTTP management port for information reporting.
 - 6222 is a routing port for clustering.
 
-```bash
-docker compose up --build -d
-```
-
+Manual nats execution (from the downloaded image)
 ```bash
 docker run -d --name nats-main -p 4222:4222 -p 6222:6222 -p 8222:8222 nats
 ```
+
+### Development steps
+1. Clone repository
+2. Create an `.env` from the `.env.template` reference.
+3. Execute the command:
+   ```bash
+   docker compose up --build -d
+   ```
+
+### Production Steps
+
+1. Clone repository
+2. Create an `.env` from the `.env.template` reference.
+3. Execute the command (building stage):
+   ```bash
+   docker compose -f docker-compose.prod.yml build
+   ```
+4. Orchestrate the production container:
+   ```bash
+   docker compose -f docker-compose.prod.yml up
+   ```
+   
+#### Adding images into Google Artifact Registry
+1. Name it with the full Google Artifact Registry repository url appending the docker image name.
+   ```bash
+   docker build -f ./DockerfileProd  -t xx-xxx-docker.pkg.dev/project-id/product-image-registry/docker-image-name .
+   ```
+2. Push using this command:
+   ```bash
+   docker image push xx-xxx-docker.pkg.dev/project-id/product-image-registry/docker-image-name
+   ```

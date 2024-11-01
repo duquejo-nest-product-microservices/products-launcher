@@ -1,0 +1,68 @@
+services:
+
+  nats-server:
+    image: nats:alpine3.20
+
+  # Client gateway microservice
+  client-gateway:
+    image: us-east1-docker.pkg.dev/products-ms-440322/product-image-registry/client-gateway
+    build:
+      context: ./client-gateway
+      dockerfile: DockerfileProd
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+
+  # Payments microservice
+  payments-ms:
+    image: us-east1-docker.pkg.dev/products-ms-440322/product-image-registry/payments-ms
+    build:
+      context: ./payments-ms
+      dockerfile: DockerfileProd
+    ports:
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
+    environment:
+      - PORT=${PAYMENTS_MS_PORT}
+      - STRIPE_SECRET=${STRIPE_SECRET}
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+      - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
+      - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
+      - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+
+  # Orders microservice
+  orders-ms:
+    image: us-east1-docker.pkg.dev/products-ms-440322/product-image-registry/orders-ms
+    build:
+      context: ./orders-ms
+      dockerfile: DockerfileProd
+      args:
+        - ORDERS_DATABASE_URL=${ORDERS_DATABASE_URL}
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+      - DATABASE_URL=${ORDERS_DATABASE_URL}
+
+  # Products microservice
+  products-ms:
+    image: us-east1-docker.pkg.dev/products-ms-440322/product-image-registry/products-ms
+    build:
+      context: ./products-ms
+      dockerfile: DockerfileProd
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+      - DATABASE_URL=file:./dev.db # SQLite
+
+  # Auth microservice
+  auth-ms:
+    image: us-east1-docker.pkg.dev/products-ms-440322/product-image-registry/auth-ms
+    build:
+      context: ./auth-ms
+      dockerfile: DockerfileProd
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222 # Docker nats-server DNS
+      - DATABASE_URL=${AUTH_DATABASE_URL}
+      - JWT_SECRET=${AUTH_JWT_SECRET}
