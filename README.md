@@ -1,7 +1,19 @@
 # Nest JS Microservices shop
 
-***Genera Architecture diagram***
+***General Architecture diagram***
 ![Microservices general diagram](./architecture.png)
+
+## Technologies used
+- [Nest JS](https://nestjs.com/): Microservices & Hybrid Microservices Backend + TypeScript.
+- [Docker](https://www.docker.com/): Microservices containerization software.
+- [Kubernetes](https://kubernetes.io/): Microservices container orchestration.
+- [Google Cloud Platform](https://cloud.google.com/): Containers production environment.
+- [JSON Web tokens](https://jwt.io/): Secured authentication security.
+- [NATS server](https://nats.io/): Simple technology transport protocol that connects all microservices.
+- [PostgreSQL](https://www.postgresql.org/): Relational database for Orders MS.
+- [MongoDB](https://www.mongodb.com/): NoSQL database for users allocation.
+- [SQLite](https://www.sqlite.org/): Local database for products MS.
+- [Stripe](https://stripe.com/es): Payments gateway platform.
 
 ## Local installation steps
 
