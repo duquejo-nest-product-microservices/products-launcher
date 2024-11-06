@@ -1,3 +1,8 @@
+# Nest JS Microservices shop
+
+***Genera Architecture diagram***
+![Microservices general diagram](./architecture.png)
+
 ## Local installation steps
 
 1. Clone repository

@@ -4,7 +4,7 @@
 ### Installation
 1. Install K8s Helm (Kubernetes package manager)
    ```shell
-   choco install kubernetes-helmNo resources found in default namespace.
+   choco install kubernetes-helm
    ```
 
 ---
