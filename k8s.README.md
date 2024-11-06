@@ -4,7 +4,7 @@
 ### Installation
 1. Install K8s Helm (Kubernetes package manager)
    ```shell
-   choco install kubernetes-helm
+   choco install kubernetes-helmNo resources found in default namespace.
    ```
 
 ---
@@ -84,3 +84,16 @@ kubectl get secret <name> -o yaml > <name>.yml
 kubectl create -f <name>.yml
 ```
 
+
+###
+Changing contexts:
+
+Visualizing available contexts:
+```bash
+kubectl config get-contexts
+```
+
+Changing current context to local (docker-desktop)
+```bash
+kubectl config use-context docker-desktop
+```
